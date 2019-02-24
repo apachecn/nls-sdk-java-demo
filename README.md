@@ -1,4 +1,5 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f63ee8a318984e0c8223afdcfa3d53fe)](https://www.codacy.com/app/weslie0803/nls-sdk-java-demo?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=lihangqi/nls-sdk-java-demo&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.com/lihangqi/nls-sdk-java-demo.svg?branch=master)](https://travis-ci.com/lihangqi/nls-sdk-java-demo)
 
 # 关键接口
 NlsClient：语音处理client，相当于所有语音相关处理类的factory，全局创建一个实例即可。线程安全。

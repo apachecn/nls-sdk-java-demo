@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/lihangqi/nls-sdk-java-demo.svg?branch=master)](https://travis-ci.com/lihangqi/nls-sdk-java-demo)
+
 # nls-sdk-java-demo
 阿里云智能语音交互DEMO
 demo 解压后，在pom 目录运行mvn package ，会在target目录生成可执行jar nls-example-transcriber-2.0.0-jar-with-dependencies.jar 将此jar拷贝到目标服务器，可用于快速验证及压测服务。

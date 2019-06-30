@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/lihangqi/nls-sdk-java-demo.svg?branch=master)](https://travis-ci.com/lihangqi/nls-sdk-java-demo)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f63ee8a318984e0c8223afdcfa3d53fe)](https://www.codacy.com/app/weslie0803/nls-sdk-java-demo?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=lihangqi/nls-sdk-java-demo&amp;utm_campaign=Badge_Grade)
 
 # nls-sdk-java-demo
 阿里云智能语音交互DEMO

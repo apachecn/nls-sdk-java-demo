@@ -13,7 +13,8 @@ import com.alibaba.nls.client.protocol.asr.SpeechTranscriberListener;
 import com.alibaba.nls.client.protocol.asr.SpeechTranscriberResponse;
 
 /**
- * Created by siwei on 2018/06/20
+ * 此示例演示了从麦克风采集语音并实时识别的过程
+ * (仅作演示，需用户根据实际情况实现)
  */
 public class SpeechTranscriberWithMicrophoneDemo {
     private String appKey;
@@ -39,6 +40,7 @@ public class SpeechTranscriberWithMicrophoneDemo {
             //识别出中间结果.服务端识别出一个字或词时会返回此消息.仅当setEnableIntermediateResult(true)时,才会有此类消息返回
             @Override
             public void onTranscriptionResultChange(SpeechTranscriberResponse response) {
+                // 重要提示： task_id很重要，是调用方和服务端通信的唯一ID标识，当遇到问题时，需要提供此task_id以便排查
                 System.out.println("name: " + response.getName() +
                     //状态码 20000000 表示正常识别
                     ", status: " + response.getStatus() +
@@ -92,6 +94,7 @@ public class SpeechTranscriberWithMicrophoneDemo {
 
             @Override
             public void onFail(SpeechTranscriberResponse response) {
+                // 重要提示： task_id很重要，是调用方和服务端通信的唯一ID标识，当遇到问题时，需要提供此task_id以便排查
                 System.out.println(
                     "task_id: " + response.getTaskId() +
                         //状态码 20000000 表示识别成功
@@ -153,16 +156,15 @@ public class SpeechTranscriberWithMicrophoneDemo {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 3) {
-            System.err.println("SpeechRecognizerDemo need params: <app-key> <token> <url>");
+        if (args.length < 2) {
+            System.err.println("SpeechRecognizerDemo need params: <app-key> <token> ");
             System.exit(-1);
         }
 
         String appKey = args[0];
         String token = args[1];
-        String url = args[2];
 
-        SpeechTranscriberWithMicrophoneDemo demo = new SpeechTranscriberWithMicrophoneDemo(appKey, token, url);
+        SpeechTranscriberWithMicrophoneDemo demo = new SpeechTranscriberWithMicrophoneDemo(appKey, token);
         demo.process();
         demo.shutdown();
     }

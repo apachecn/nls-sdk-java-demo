@@ -12,12 +12,15 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.6</java.version>
+        <java.version>1.8</java.version>
         <sdk.version>2.1.0</sdk.version>
     </properties>
 
     <modules>
-<module>nls-example-recognizer</module><module>nls-example-transcriber</module><module>nls-example-tts</module>
+        <module>nls-example-recognizer</module>
+        <module>nls-example-transcriber</module>
+        <module>nls-example-tts</module>
+        <module>nls-example-token</module>
     </modules>
 
     <dependencies>

@@ -4,6 +4,32 @@
 阿里云智能语音交互DEMO
 demo 解压后，在pom 目录运行mvn package ，会在target目录生成可执行jar nls-example-transcriber-2.0.0-jar-with-dependencies.jar 将此jar拷贝到目标服务器，可用于快速验证及压测服务。
 
+## 介绍
+本示例代码是阿里云智能语音交互服务相关的java 语言示例。 包括了一句话识别、实时识别、录音文件识别、语音合成等多个功能的演示。
+
+**需要说明的是：以下代码均为demo示例，当需要集成到自己的系统中时，注意根据实际情况进行相应修改，比如逻辑调整、参数设置、异常处理等等。**
+
+### 一句话识别(nls-example-recognizer)
+- SpeechRecognizerDemo ：单线程调用演示一句话识别接口
+- SpeechRecognizerMultiThreadDemo ：多线程调用演示一句话识别接口
+
+### 实时识别(nls-example-transcriber)
+- SpeechTranscriberDemo ：单线程调用演示实时语音识别接口
+- SpeechTranscriberMultiThreadDemo ：多线程调用演示实时语音识别接口
+- SpeechTranscriberWithMicrophoneDemo ：演示了从麦克风采集语音并实时识别的过程
+
+### 语音合成(nls-example-tts)
+- SpeechSynthesizerDemo ：单线程调用演示语音合成接口
+- SpeechSynthesizerMultiThreadDemo ：多线程调用演示语音合成接口
+- SpeechSynthesizerLongTextDemo ：演示长文本语音合成调用时，如何拆分文本的功能
+
+### token获取(nls-example-token)
+- TokenDemo ： 演示token的获取方式
+- SpeechTokenGeneratorDemo ： 演示token定时获取的方式
+
+
+2019年07月19日
+
 ## 服务验证
  
 ```java -cp nls-example-transcriber-2.0.0-jar-with-dependencies.jar com.alibaba.nls.client.SpeechTranscriberDemo```

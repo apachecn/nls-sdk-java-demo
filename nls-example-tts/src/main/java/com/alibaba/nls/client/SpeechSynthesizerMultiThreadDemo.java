@@ -8,26 +8,40 @@ import java.util.concurrent.CountDownLatch;
 
 import com.alibaba.nls.client.protocol.NlsClient;
 import com.alibaba.nls.client.protocol.OutputFormatEnum;
+import com.alibaba.nls.client.protocol.SampleRateEnum;
 import com.alibaba.nls.client.protocol.tts.SpeechSynthesizer;
 import com.alibaba.nls.client.protocol.tts.SpeechSynthesizerListener;
 import com.alibaba.nls.client.protocol.tts.SpeechSynthesizerResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Created by siwei on 2018/06/20
+ * 此示例演示了
+ *      语音合成SDK API调用
+ *      多线程并发调用
+ *      用户自定义参数设置
+ *      流式合成TTS
+ *      首包延迟计算
+ * (仅作演示，需用户根据实际情况实现)
  */
 public class SpeechSynthesizerMultiThreadDemo {
-    private static int sampleRate;
+    private static final Logger logger = LoggerFactory.getLogger(SpeechSynthesizerMultiThreadDemo.class);
 
     private static SpeechSynthesizerListener getSynthesizerListener(final String audioFileName) {
         SpeechSynthesizerListener listener = null;
         try {
             listener = new SpeechSynthesizerListener() {
-                //如果需要播放音频,且对实时性要求较高,建议使用流式播放
+                // TODO 如果需要播放音频,且对实时性要求较高,建议使用流式播放
                 File f = new File(audioFileName);
                 FileOutputStream fout = new FileOutputStream(f);
+                private boolean firstRecvBinary = true;
+                private long firstRecvBinaryTimeStamp = System.currentTimeMillis();
+
                 // 语音合成结束
                 @Override
                 public void onComplete(SpeechSynthesizerResponse response) {
+                    // TODO 重要提示： task_id很重要，是调用方和服务端通信的唯一ID标识，当遇到问题时，需要提供此task_id以便排查
                     System.out.println("task_id: " + response.getTaskId() +
                     ", thread id: " + Thread.currentThread().getId() +
                         ", name: " + response.getName() +
@@ -40,10 +54,16 @@ public class SpeechSynthesizerMultiThreadDemo {
                 @Override
                 public void onMessage(ByteBuffer message) {
                     try {
+                        if(firstRecvBinary) {
+                            // TODO 此处是计算首包语音流的延迟，收到第一包语音流时，即可以进行语音播放，以提升响应速度(特别是实时交互场景下)
+                            firstRecvBinary = false;
+                            long now = System.currentTimeMillis();
+                            logger.info("first latency : " + (now - firstRecvBinaryTimeStamp) + " ms");
+                        }
                         byte[] bytesArray = new byte[message.remaining()];
                         message.get(bytesArray, 0, bytesArray.length);
-                        System.out.println("thread id: " + Thread.currentThread().getId() +
-                            ", write arrya:" + bytesArray.length);
+                        System.out.println("output: " + audioFileName + ", thread id: "
+                                    + Thread.currentThread().getId() + ", write arrya:" + bytesArray.length);
                         fout.write(bytesArray);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -51,16 +71,10 @@ public class SpeechSynthesizerMultiThreadDemo {
                 }
                 @Override
                 public void onFail(SpeechSynthesizerResponse response){
+                    // TODO 重要提示： task_id很重要，是调用方和服务端通信的唯一ID标识，当遇到问题时，需要提供此task_id以便排查
                     System.out.println(
-                        "task_id: " + response.getTaskId() +
-                            //状态码 20000000 表示识别成功
-                            ", status: " + response.getStatus() +
-                            //错误信息
-                            ", status_text: " + response.getStatusText());
-
+                        "task_id: " + response.getTaskId() + ", status: " + response.getStatus() + ", status_text: " + response.getStatusText());
                 }
-
-
             };
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,7 +107,7 @@ public class SpeechSynthesizerMultiThreadDemo {
                 // 设置返回音频的编码格式
                 synthesizer.setFormat(OutputFormatEnum.WAV);
                 // 设置返回音频的采样率
-                synthesizer.setSampleRate(sampleRate);
+                synthesizer.setSampleRate(SampleRateEnum.SAMPLE_RATE_16K);
                 // 设置用于语音合成的文本
                 synthesizer.setText(text);
 
@@ -115,36 +129,38 @@ public class SpeechSynthesizerMultiThreadDemo {
     public static void main(String[] args) {
         if (args.length < 6) {
             System.err.println("SpeechSynthesizerMultiThreadDemo need params: " +
-                    "<app-key> <token> <url> <text> <save-audio-name> <thread-num>");
+                "<app-key> <token> <url> <text> <save-audio-name> <thread-num>");
             System.exit(-1);
         }
 
-        String appKey = args[0];
-        String token = args[1];
-        String url = args[2];
-        String text = args[3];
-        String audioFileName = args[4];
-        int threadNum = Integer.parseInt(args[5]);
-
-        String sampleRateStr=System.getProperty("sampleRate","16000");
-        sampleRate=Integer.parseInt(sampleRateStr);
+        String appKey = args[0];     // appkey
+        String token = args[1];      // token
+        String url = args[2];        // url
+        String text = args[3];       // 合成文本
+        String audioFileName = args[4];    // 待保存文件名
+        int threadNum = Integer.parseInt(args[5]);  // 并发数
 
         final NlsClient client = new NlsClient(url, token);
         CountDownLatch latch = new CountDownLatch(threadNum);
 
         try {
             for (int i = 0; i < threadNum; i++) {
-                String temp = null;
+                // 拼接一个文件名
+                String path = null;
                 int index = audioFileName.lastIndexOf(".");
                 if (index <= 0) {
-                    temp = audioFileName + "_" + (i + 1);
+                    path = audioFileName + "_" + (i + 1) + ".wav";
                 } else {
-                    temp = audioFileName.substring(0, index) +
+                    path = audioFileName.substring(0, index) +
                             "_" + (i + 1) + audioFileName.substring(index, audioFileName.length());
                 }
-                Task task = new Task(appKey, client, latch, text, temp);
+
+                // 创建一个请求任务线程
+                Task task = new Task(appKey, client, latch, text, path);
                 new Thread(task).start();
             }
+
+            // 等待所有请求任务结束
             latch.await();
         } catch (Exception e) {
             e.printStackTrace();

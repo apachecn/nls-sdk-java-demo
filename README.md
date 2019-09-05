@@ -1,5 +1,3 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f63ee8a318984e0c8223afdcfa3d53fe)](https://www.codacy.com/app/weslie0803/nls-sdk-java-demo?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=lihangqi/nls-sdk-java-demo&amp;utm_campaign=Badge_Grade)
-
 # nls-sdk-java-demo
 阿里云智能语音交互DEMO
 demo 解压后，在pom 目录运行mvn package ，会在target目录生成可执行jar nls-example-transcriber-2.0.0-jar-with-dependencies.jar 将此jar拷贝到目标服务器，可用于快速验证及压测服务。
